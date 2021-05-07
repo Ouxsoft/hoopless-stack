@@ -1,0 +1,11 @@
+.project
+.buildpath
+.idea
+app/.phpunit.result.cache
+app/.php_cs.cache
+app/vendor/*
+.idea
+.idea/*
+.vscode
+.vscode/*
+app/config.yml

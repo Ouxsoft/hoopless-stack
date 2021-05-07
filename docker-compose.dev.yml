@@ -1,0 +1,82 @@
+version: "3.4"
+
+services:
+
+  proxy:
+    image: nginxproxy/nginx-proxy
+    container_name: nginx-proxy
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    ports:
+      - "80:80"
+    networks:
+      - proxynet
+
+  webserver:
+    environment:
+      - VIRTUAL_HOST=localhost
+      - CERT_NAME=localhost
+    networks:
+      - proxynet
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    restart: always
+    ports:
+      - 1025:1025
+      - 8025:8025
+    networks:
+      - proxynet
+
+  mysql:
+    container_name: mysql
+    image: mysql:8.0
+    volumes:
+      - ./app/sql:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - proxynet
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8080:8080"
+    environment:
+      - VIRTUAL_HOST=db.localhost
+      - PMA_HOST=mysql
+      - PMA_USER=root
+      - PMA_PASSWORD=
+    networks:
+      - proxynet
+    depends_on:
+      - mysql
+
+  jenkins:
+    build:
+      context: ./docker/jenkins
+      dockerfile: Dockerfile
+    container_name: jenkins
+    volumes:
+      - ./docker/jenkins/jenkins_home:/var/jenkins_home
+    ports:
+      - "8081:8081"
+    environment:
+      - VIRTUAL_HOST=cd.localhost
+      - VIRTUAL_PORT=8081
+    networks:
+      - proxynet
+
+  php-fpm:
+    build:
+      target: testing
+    networks:
+      - proxynet
+
+networks:
+  proxynet:
+    external: false
