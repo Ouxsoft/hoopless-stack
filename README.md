@@ -4,7 +4,7 @@
 
 Install with [Git](https://git-scm.com/):
 ```shell script
-git clone git@github.com:Ouxsoft/Hoopless.git
+git clone --recurse-submodules git@github.com:Ouxsoft/Hoopless.git
 ```
 
 Start local development stack using [Docker](https://docs.docker.com/get-docker/).
