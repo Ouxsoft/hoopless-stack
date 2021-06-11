@@ -50,16 +50,20 @@ RUN apt-get -yqq update \
     && chown -R $group:$user ~/.composer/
 
 # install necessary tools for running application
-# install opcache, apcu
+# install opcache, apcu, pdo_mysql
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install \
     gd \
     intl \
     opcache \
     zip \
+    pdo_mysql \
     && docker-php-source extract \
     && pecl install opcache apcu \
-    && docker-php-ext-enable opcache apcu \
+    && docker-php-ext-enable \
+    opcache \
+    apcu \
+    pdo_mysql \
     && docker-php-source delete \
     && rm -rf /tmp/*
 
