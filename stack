@@ -21,6 +21,8 @@ function show_help {
   build {clean}              - Build containers
   up                         - Bring development environment up
   down                       - Bring development environment down
+  db diff                    - Doctrine generate Entity based migration
+  db migrate                 - Doctrine run migration
   nginx reload               - Reload nginx
   clear cache                - Clear cache
   help                       - Show this message
@@ -61,7 +63,7 @@ function docker_exec {
   if [ "$container" = "" ]; then
     container="hoopless-php-fpm"
   fi
-  docker-compose exec $container bash
+  docker exec -it -u root:root $container bash
 }
 
 function docker_start {
@@ -168,6 +170,16 @@ function docker_errors {
   docker exec webserver tail ../var/log/nginx/error.log
 }
 
+function docker_db_diff {
+  echo "DB Migration Diff"
+  docker exec --user root hoopless-php-fpm php ./vendor/bin/doctrine-migrations migrations:diff
+}
+
+function docker_db_migrate {
+  echo "DB Migrate"
+  docker exec --user root hoopless-php-fpm php ./vendor/bin/doctrine-migrations migrations:migrate
+}
+
 function nginx_reload {
   docker exec -it webserver nginx -s reload
 }
@@ -209,8 +221,12 @@ elif [ "$arg_1" == "clear" ]; then
   if [ "$arg_2" == "cache" ]; then
     clear_cache
   fi
-elif [ "$arg_1" == "install" ]; then
-  stack_install $arg_2
+elif [ "$arg_1" == "db" ]; then
+  if [ "$arg_2" == "diff" ]; then
+    docker_db_diff
+  elif [ "$arg_1" == "migrate" ]; then
+    docker_db_migrate
+  fi
 elif [ "$arg_1" == "help" ]; then
   show_help
 else
