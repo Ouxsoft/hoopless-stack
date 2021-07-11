@@ -86,13 +86,11 @@ function docker_start {
       up -d --remove-orphans
     fi
     if [ "$env" = "dev" ]; then
-      # must be ran outside of Dockerfile due to mount
-      # echo "Update composer"
-      docker exec --user root hoopless-php-fpm composer update -d .
-      docker exec --user root hoopless-php-fpm composer dump-autoload --optimize -d .
+      composer_update
       echo "Set NGNIX file permissions on cache director"
       docker exec nginx-server chmod 0755 var/cache/images
     fi
+    docker_db_migrate
   else
     echo "A valid stack environment required, e.g.:"
     echo "./stack start dev"
@@ -187,6 +185,13 @@ function nginx_reload {
 function clear_cache {
   rm -r ./app/var/cache/images/*
   #docker exec -it webserver rm -r /application/var/cache/images/*
+}
+
+function composer_update {
+  # must be ran outside of Dockerfile due to mount
+  # echo "Update composer"
+  docker exec --user root hoopless-php-fpm composer update -d .
+  docker exec --user root hoopless-php-fpm composer dump-autoload --optimize -d .
 }
 
 if [ "$arg_1" == "start" ]; then
