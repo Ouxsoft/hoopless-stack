@@ -224,7 +224,7 @@ elif [ "$arg_1" == "clear" ]; then
 elif [ "$arg_1" == "db" ]; then
   if [ "$arg_2" == "diff" ]; then
     docker_db_diff
-  elif [ "$arg_1" == "migrate" ]; then
+  elif [ "$arg_2" == "migrate" ]; then
     docker_db_migrate
   fi
 elif [ "$arg_1" == "help" ]; then
