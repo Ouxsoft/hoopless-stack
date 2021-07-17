@@ -56,6 +56,7 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     gd \
     intl \
     opcache \
+    apcu \
     zip \
     pdo_mysql \
     && docker-php-source extract \
@@ -65,6 +66,7 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     apcu \
     pdo_mysql \
     && docker-php-source delete \
+    && echo "apc.enable_cli=1\n" >> "$PHP_INI_DIR/conf.d/docker-php-ext-apcu.ini" \
     && rm -rf /tmp/*
 
 # set UTC server time
@@ -82,17 +84,13 @@ FROM build AS testing
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
 RUN pecl install xdebug \
-    && echo "xdebug.remote_enable=on\n" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
-    && echo "xdebug.remote_autostart=on\n" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
-    && echo "xdebug.remote_port=9000\n" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
-    && echo "xdebug.remote_handler=dbgp\n" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
-    && echo "xdebug.remote_connect_back=1\n" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.remote_enable=on\n" >> "$PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini" \
+    && echo "xdebug.remote_autostart=on\n" >> "$PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini" \
+    && echo "xdebug.remote_port=9000\n" >> "$PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini" \
+    && echo "xdebug.remote_handler=dbgp\n" >> "$PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini" \
+    && echo "xdebug.remote_connect_back=1\n" >> "$PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini" \
     && docker-php-ext-enable xdebug \
     && rm -rf /tmp/*
-
-#COPY ./app /application
-#RUN composer install --dev --no-interaction
-#ENV PATH="~/.composer/vendor/bin:./vendor/bin:${PATH}"
 
 USER $user
 
