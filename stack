@@ -61,7 +61,7 @@ function docker_wipe {
 function docker_exec {
   local container=$1
   if [ "$container" = "" ]; then
-    container="hoopless-php-fpm"
+    container="php-fpm"
   fi
   docker exec -it -u root:root $container bash
 }
@@ -88,7 +88,7 @@ function docker_start {
     if [ "$env" = "dev" ]; then
       composer_update
       echo "Set NGNIX file permissions on cache director"
-      docker exec nginx-server chmod 0755 var/cache/images
+      docker exec ocms-nginx-server chmod 0755 var/cache/images
     fi
     docker_db_migrate
   else
@@ -165,33 +165,33 @@ function docker_build {
 
 function docker_errors {
   echo "Tailing NGINX Error Log"
-  docker exec webserver tail ../var/log/nginx/error.log
+  docker exec ocms-webserver tail ../var/log/nginx/error.log
 }
 
 function docker_db_diff {
   echo "DB Migration Diff"
-  docker exec --user root hoopless-php-fpm php ./vendor/bin/doctrine-migrations migrations:diff
+  docker exec --user root ocms-php-fpm php ./vendor/bin/doctrine-migrations migrations:diff
 }
 
 function docker_db_migrate {
   echo "DB Migrate"
-  docker exec --user root hoopless-php-fpm php ./vendor/bin/doctrine-migrations migrations:migrate
+  docker exec --user root ocms-php-fpm php ./vendor/bin/doctrine-migrations migrations:migrate
 }
 
 function nginx_reload {
-  docker exec -it webserver nginx -s reload
+  docker exec -it ocms-webserver nginx -s reload
 }
 
 function clear_cache {
   rm -r ./app/var/cache/images/*
-  #docker exec -it webserver rm -r /application/var/cache/images/*
+  #docker exec -it ocms-webserver rm -r /application/var/cache/images/*
 }
 
 function composer_update {
   # must be ran outside of Dockerfile due to mount
   # echo "Update composer"
-  docker exec --user root hoopless-php-fpm composer update -d .
-  docker exec --user root hoopless-php-fpm composer dump-autoload --optimize -d .
+  docker exec --user root ocms-php-fpm composer update -d .
+  docker exec --user root ocms-php-fpm composer dump-autoload --optimize -d .
 }
 
 if [ "$arg_1" == "start" ]; then

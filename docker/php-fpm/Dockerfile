@@ -49,24 +49,24 @@ RUN apt-get -yqq update \
     && chown -R $group:$user /var/www/ \
     && chown -R $group:$user ~/.composer/
 
+# caching apcu
+RUN pecl install opcache apcu \
+    && echo "apc.enable_cli=1\n" >> "$PHP_INI_DIR/conf.d/docker-php-ext-apcu.ini"
+
 # install necessary tools for running application
-# install opcache, apcu, pdo_mysql
+# install opcache, pdo_mysql
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install \
     gd \
     intl \
     opcache \
-    apcu \
     zip \
     pdo_mysql \
     && docker-php-source extract \
-    && pecl install opcache apcu \
     && docker-php-ext-enable \
     opcache \
-    apcu \
     pdo_mysql \
     && docker-php-source delete \
-    && echo "apc.enable_cli=1\n" >> "$PHP_INI_DIR/conf.d/docker-php-ext-apcu.ini" \
     && rm -rf /tmp/*
 
 # set UTC server time

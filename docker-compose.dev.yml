@@ -4,7 +4,7 @@ services:
 
   proxy:
     image: nginxproxy/nginx-proxy
-    container_name: nginx-proxy
+    container_name: ocms-nginx-proxy
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
     ports:
@@ -29,7 +29,7 @@ services:
       - proxynet
 
   mysql:
-    container_name: mysql
+    container_name: ocms-mysql
     image: mysql:8.0
     volumes:
       - ./docker/mysql:/docker-entrypoint-initdb.d
@@ -42,7 +42,7 @@ services:
       - proxynet
 
   phpmyadmin:
-    container_name: phpmyadmin
+    container_name: ocms-phpmyadmin
     image: phpmyadmin/phpmyadmin
     ports:
       - "8080:8080"
@@ -59,7 +59,7 @@ services:
 
   solr:
     image: solr:8.9.0
-    container_name: solr
+    container_name: ocms-solr
     ports:
       - "8983:8983"
     volumes:
@@ -78,7 +78,7 @@ services:
     build:
       context: ./docker/jenkins
       dockerfile: Dockerfile
-    container_name: jenkins
+    container_name: ocms-jenkins
     volumes:
       - ./docker/jenkins/jenkins_home:/var/jenkins_home
     ports:
@@ -90,6 +90,7 @@ services:
       - proxynet
 
   php-fpm:
+    container_name: ocms-php-fpm
     build:
       target: testing
     networks:

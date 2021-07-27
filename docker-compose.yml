@@ -4,7 +4,7 @@ services:
 
   proxy:
     image: nginxproxy/nginx-proxy
-    container_name: nginx-proxy
+    container_name: ocms-nginx-proxy
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
 
@@ -12,7 +12,6 @@ services:
     build:
       context: .
       dockerfile: docker/nginx/Dockerfile
-    container_name: nginx-server
     working_dir: /application
     volumes:
       - ./app:/application:rw
@@ -27,7 +26,6 @@ services:
         uid: 1000
       context: .
       dockerfile: docker/php-fpm/Dockerfile
-    container_name: hoopless-php-fpm
     working_dir: /application
     volumes:
       - ./app:/application
