@@ -61,7 +61,7 @@ function docker_wipe {
 function docker_exec {
   local container=$1
   if [ "$container" = "" ]; then
-    container="php-fpm"
+    container="ocms-php-fpm"
   fi
   docker exec -it -u root:root $container bash
 }
