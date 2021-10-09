@@ -57,37 +57,22 @@ services:
       - proxy
       - mysql
 
-  solr:
-    image: solr:8.9.0
-    container_name: ocms-solr
-    ports:
-      - "8983:8983"
-    volumes:
-      - search-data:/var/solr
-    command:
-      - solr-precreate
-      - gettingstarted
-    environment:
-      - VIRTUAL_HOST=search.localhost
-    networks:
-      - proxynet
-    depends_on:
-      - proxy
-
-  jenkins:
-    build:
-      context: ./docker/jenkins
-      dockerfile: Dockerfile
-    container_name: ocms-jenkins
-    volumes:
-      - ./docker/jenkins/jenkins_home:/var/jenkins_home
-    ports:
-      - "8081:8081"
-    environment:
-      - VIRTUAL_HOST=cd.localhost
-      - VIRTUAL_PORT=8081
-    networks:
-      - proxynet
+#  solr:
+#    image: solr:8.9.0
+#    container_name: ocms-solr
+#    ports:
+#      - "8983:8983"
+#    volumes:
+#      - search-data:/var/solr
+#    command:
+#      - solr-precreate
+#      - gettingstarted
+#    environment:
+#      - VIRTUAL_HOST=search.localhost
+#    networks:
+#      - proxynet
+#    depends_on:
+#      - proxy
 
   php-fpm:
     container_name: ocms-php-fpm
